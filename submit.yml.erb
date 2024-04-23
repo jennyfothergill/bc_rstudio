@@ -1,3 +1,20 @@
+<%-
+  nodes = bc_num_slots.blank? ? 1 : bc_num_slots.to_i
+  ppn = num_cores.blank? ? 1 : num_cores.to_i
+
+  slurm_args = [
+    "--nodes", "#{nodes}",
+    "--ntasks-per-node", "#{ppn}",
+  ]
+%>
 ---
 batch_connect:
-  template: "basic"
+  template: "vnc"
+
+script:
+  native:
+  <%- slurm_args.each do |arg| %>
+    - "<%= arg %>"
+  <%- end %>
+    - "-J RStudio"
+    - "--exclusive"
