@@ -1,0 +1,87 @@
+<%-
+require 'open3'
+begin
+    oodqueues = ['ondemand', 'ondemand-p100', 'cryogars']
+    # Command to Run
+    script = '/cm/shared/apps/slurm/current/bin/sinfo -h --format="%P"'
+    # Create a partitions array to dynamically populate the queues associated
+    # with the user
+    partitions = []
+    # Store the output, error, status
+    output, status = Open3.capture2('bash', stdin_data: script)
+    # puts status
+    if status.success?
+        # Add it to the custom_envs array by splitting the output at '\n'.
+        output.split("\n").each do |queue|
+            if oodqueues.include?(queue)
+                queue = queue.gsub("*", "")
+                partitions.push(queue)
+            end
+        end
+        puts partitions
+    else
+        partition_error = "Error"
+    end
+rescue => e
+    partition_error = e.message.strip
+end
+-%>
+---
+cluster:
+  - "borah"
+form:
+  - bc_num_slots
+  - bc_num_hours
+  - bc_vnc_resolution
+  - custom_queue
+  - num_cores
+  - version
+  - bc_email_on_started
+attributes:
+  bc_num_slots: 1
+  bc_vnc_resolution:
+    required: true
+  version:
+    widget: select
+    label: "RStudio version"
+    help: "This defines the RStudio version you want to load."
+    options:
+      - [
+          "2023.06.1", "2023.06.1",
+        ]
+  num_cores:
+    widget: hidden_field
+  bc_num_hours:
+    value: 1
+    min: 1
+    max: 4
+  custom_queue:
+    label: Partition
+    widget: select
+    cacheable: false
+    help: |
+      - **ondemand** <br>
+        Standard Borah nodes have 48 cores and 186 GB of memory.
+        By selecting the "ondemand" partition, you will be given 4 CPU cores.
+      - **ondemand-p100** <br>
+        These are HPC nodes with 2 [NVIDIA Tesla P100 GPUs], 28 cores, and
+        251 GB of memory.
+        By selecting the "ondemand-p100" partition, you will be given 14 cores
+        and 1 GPU.
+        [NVIDIA Tesla P100 GPUs]: http://www.nvidia.com/object/tesla-p100.html
+    <%- if partitions.include?("cryogars")-%>
+      - **cryogars** <br>
+        This node has 2 [NVIDIA A30 GPUs], 64 cores, and 1 TB of memory.
+        By selecting the "cryogars" partition, you will be given 32 cores
+        and 1 GPU.
+        [NVIDIA A30 GPUs]: https://www.nvidia.com/a30
+    <%- end -%>
+    <%- if partition_error || partitions.blank?-%>
+      <div class="text-danger">Error while fetching Partition. Please contact
+      support!</div>
+    <%- else -%>
+    options:
+    <%- partitions.each do |q| -%>
+      - [ "<%= q %>", "<%= q %>" ]
+    <%- end -%>
+    <%- end -%>

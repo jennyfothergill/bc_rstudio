@@ -1,11 +1,28 @@
 <%-
   nodes = bc_num_slots.blank? ? 1 : bc_num_slots.to_i
-  ppn = num_cores.blank? ? 1 : num_cores.to_i
 
-  slurm_args = [
-    "--nodes", "#{nodes}",
-    "--ntasks-per-node", "#{ppn}",
-  ]
+  case custom_queue
+  when "ondemand-p100"
+    slurm_args = [
+      "--nodes", "#{nodes}",
+      "--ntasks-per-node", "14",
+      "--gpus-per-node", "1",
+      "--partition", "ondemand-p100"
+    ]
+  when "cryogars"
+    slurm_args = [
+      "--nodes", "#{nodes}",
+      "--ntasks-per-node", "32",
+      "--gpus-per-node", "1",
+      "--partition", "cryogars"
+    ]
+  else
+    slurm_args = [
+      "--nodes", "#{nodes}",
+      "--ntasks-per-node", "4",
+      "--partition", "ondemand"
+    ]
+  end
 %>
 ---
 batch_connect:
@@ -17,4 +34,3 @@ script:
     - "<%= arg %>"
   <%- end %>
     - "-J RStudio"
-    - "--exclusive"

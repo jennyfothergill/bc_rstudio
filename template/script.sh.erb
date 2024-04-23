@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+<%- 
+    gpu_queues = ['ondemand-p100', 'cryogars']
+    gpu = gpu_queues.include?(context.custom_queue) 
+-%>
+
 # Clean the environment
 module purge
 
@@ -37,4 +42,8 @@ unset LD_PRELOAD
 # Launch RStudio
 module list
 set -x
+<%- if gpu -%>
+vglrun rstudio
+<%- else -%>
 rstudio
+<%- end -%>
