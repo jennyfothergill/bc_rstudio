@@ -1,7 +1,8 @@
 <%-
 require 'open3'
 begin
-    oodqueues = ['ondemand', 'ondemand-p100', 'cryogars']
+    #oodqueues = ['ondemand', 'ondemand-p100', 'cryogars']
+    oodqueues = ['ondemand']
     # Command to Run
     script = '/cm/shared/apps/slurm/current/bin/sinfo -h --format="%P"'
     # Create a partitions array to dynamically populate the queues associated
@@ -63,12 +64,14 @@ attributes:
       - **ondemand** <br>
         Standard Borah nodes have 48 cores and 186 GB of memory.
         By selecting the "ondemand" partition, you will be given 4 CPU cores.
+    <%- if partitions.include?("ondemand-p100")-%>
       - **ondemand-p100** <br>
         These are HPC nodes with 2 [NVIDIA Tesla P100 GPUs], 28 cores, and
         251 GB of memory.
         By selecting the "ondemand-p100" partition, you will be given 14 cores
         and 1 GPU.
         [NVIDIA Tesla P100 GPUs]: http://www.nvidia.com/object/tesla-p100.html
+    <%- end -%>
     <%- if partitions.include?("cryogars")-%>
       - **cryogars** <br>
         This node has 2 [NVIDIA A30 GPUs], 64 cores, and 1 TB of memory.
