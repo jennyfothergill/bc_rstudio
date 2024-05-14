@@ -37,6 +37,12 @@ cd "${HOME}"
 # Load the required environment
 module load rstudio/2023.06.1
 unset LD_PRELOAD
+<%- if context.r_path != "" -%>
+echo "Setting custom R path to <%= context.r_path %>"
+export RSTUDIO_WHICH_R=<%= context.r_path %>
+<%- else -%>
+echo "No custom R path set"
+<%- end -%>
 
 # Launch RStudio
 module list

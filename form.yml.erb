@@ -37,6 +37,7 @@ form:
   - custom_queue
   - num_cores
   - version
+  - r_path
   - bc_email_on_started
 attributes:
   bc_num_slots: 1
@@ -56,6 +57,13 @@ attributes:
     value: 1
     min: 1
     max: 4
+  r_path:
+    widget: "text_field"
+    label: "R Path"
+    value: ""
+    help: |
+      The path to a R executable from a module or a conda environment.
+      If left blank, the R will be the same as in the rstudio module.
   custom_queue:
     label: Partition
     widget: select
