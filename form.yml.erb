@@ -68,6 +68,13 @@ attributes:
     label: Partition
     widget: select
     help: |
+    <%- if partitions.include?("cryogars")-%>
+      - **cryogars** <br>
+        This node has 2 [NVIDIA A30 GPUs], 64 cores, and 1 TB of memory.
+        By selecting the "cryogars" partition, you will be given 32 cores
+        and 1 GPU.
+        [NVIDIA A30 GPUs]: https://www.nvidia.com/a30
+    <%- end -%>
       - **ondemand** <br>
         Standard Borah nodes have 48 cores and 186 GB of memory.
         By selecting the "ondemand" partition, you will be given 4 CPU cores.
@@ -78,13 +85,6 @@ attributes:
         By selecting the "ondemand-p100" partition, you will be given 14 cores
         and 1 GPU.
         [NVIDIA Tesla P100 GPUs]: http://www.nvidia.com/object/tesla-p100.html
-    <%- end -%>
-    <%- if partitions.include?("cryogars")-%>
-      - **cryogars** <br>
-        This node has 2 [NVIDIA A30 GPUs], 64 cores, and 1 TB of memory.
-        By selecting the "cryogars" partition, you will be given 32 cores
-        and 1 GPU.
-        [NVIDIA A30 GPUs]: https://www.nvidia.com/a30
     <%- end -%>
     <%- if partition_error || partitions.blank?-%>
       <div class="text-danger">Error while fetching Partition. Please contact
